@@ -14,6 +14,18 @@ public class Servidor {
 
     public static void main(String[] args) throws IOException {
         
+        HttpServer server = inicializaServidor();
+
+        System.out.println("Servidor rodando");
+
+        System.in.read();
+        server.shutdown();
+
+    }
+
+
+    public static HttpServer inicializaServidor() {
+
         //Configuração dos recursos. Tudo que estiver dentro do pacote "br.com.rodolfo.loja" deverá ser gerenciado. Informamos ao servidor que nossa aplicação é baseada em JAX-RS e não em servlet-api
         ResourceConfig config = new ResourceConfig().packages("br.com.rodolfo.loja");
 
@@ -24,11 +36,7 @@ public class Servidor {
         //entender quais as classes do JAX-RS
         HttpServer server = GrizzlyHttpServerFactory.createHttpServer(uri, config);
 
-        System.out.println("Servidor rodando");
-
-        System.in.read();
-        server.shutdown();
-
+        return server;
     }
 
 }

@@ -4,25 +4,48 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
+import com.thoughtworks.xstream.XStream;
+
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+
+import br.com.rodolfo.loja.models.Carrinho;
 
 public class ClienteTest {
     
-    @Test
-    public void testaQueAConexaoComOServidorFunciona() {
+    private HttpServer server;
+
+    @Before
+    public void startaServidor() {
+
+        server = Servidor.inicializaServidor();
+    }
+
+    @After
+    public void mataServidor() {
         
+        server.shutdown();
+    }
+        
+    @Test
+    public void testaQueBuscarUmCarrinhoTrazOCarrinhoEsperado() {
+
         //cliente HTTP que faz as requisições para o servidor
-        Client client = ClientBuilder.newClient();
+        Client cliente = ClientBuilder.newClient();
 
         //Criar um alvo 'link' para realizar os trabalhos
-        WebTarget target = client.target("http://www.mocky.io");
+        WebTarget target = cliente.target("http://localhost:8080");
 
         //Faz a requisição ao servidor e passa como parâmetro o formato 'String' que é o que esperamos
-        String conteudo = target.path("/v2/52aaf5deee7ba8c70329fb7d").request().get(String.class);
+        String conteudo = target.path("/carrinhos").request().get(String.class);
 
-        Assert.assertTrue(conteudo.contains("<rua>Rua Vergueiro 3185"));
+        //Deserializar o XML para o objeto Carrinho
+        Carrinho carrinho = (Carrinho) new XStream().fromXML(conteudo);
 
+        Assert.assertEquals("Rua aguas de marco, 210", carrinho.getRua());
     }
 
 }
