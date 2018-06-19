@@ -1,0 +1,1 @@
+A primeira característirca de um servidor REST é a Adressability: todo recurso possui um endereço (URI) que pode ser acessado, a URI que identifica o recurso e não o usuário que está acessando a URI que identificou o carrinho, ou seja, João, Maria, Gustavo acessando a mesma URI visualizará o mesmo recurso. Quando se fala em REST a comunicação é realizada com o mesmo protocolo.
