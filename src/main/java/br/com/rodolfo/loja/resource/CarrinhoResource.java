@@ -1,13 +1,23 @@
 package br.com.rodolfo.loja.resource;
 
+import java.util.Collection;
+
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.security.NoTypePermission;
+import com.thoughtworks.xstream.security.NullPermission;
+import com.thoughtworks.xstream.security.PrimitiveTypePermission;
+
+import br.com.rodolfo.loja.Servidor;
 import br.com.rodolfo.loja.dao.CarrinhoDao;
 import br.com.rodolfo.loja.models.Carrinho;
+import br.com.rodolfo.loja.models.Produto;
 
 /**
 * Classe que representa um recurso WEB, ou seja, que retorna o XML
@@ -36,6 +46,23 @@ public class CarrinhoResource {
         //pode-se utilizar qualquer biblioteca de serialização/deserialização, ex.: JSON, HTML, XML .....
         return carrinho.toXML();
     }
+
+    @POST
+    @Produces(MediaType.APPLICATION_XML)
+    public String adiciona(String conteudo) {
+
+        //Caso ocorra erro de "Security framework of XStream"
+        //XStream xStream = new XStream();
+        //Class<?>[] classes = new Class[]{CarrinhoResource.class, Carrinho.class, Produto.class, CarrinhoDao.class, Servidor.class};
+        //xStream.allowTypes(classes);
+        
+        Carrinho carrinho = (Carrinho) new XStream().fromXML(conteudo);
+        new CarrinhoDao().adiciona(carrinho);
+
+        return "<status>success</status>";
+    }
+
+
 
     @Path("json/{id}")
     @GET
