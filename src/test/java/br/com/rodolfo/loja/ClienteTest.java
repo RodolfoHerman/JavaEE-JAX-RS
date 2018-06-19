@@ -40,7 +40,7 @@ public class ClienteTest {
         WebTarget target = cliente.target("http://localhost:8080");
 
         //Faz a requisição ao servidor e passa como parâmetro o formato 'String' que é o que esperamos
-        String conteudo = target.path("/carrinhos").request().get(String.class);
+        String conteudo = target.path("/carrinhos/1").request().get(String.class);
 
         //Deserializar o XML para o objeto Carrinho
         Carrinho carrinho = (Carrinho) new XStream().fromXML(conteudo);
