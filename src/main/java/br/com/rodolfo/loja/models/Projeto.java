@@ -1,5 +1,6 @@
 package br.com.rodolfo.loja.models;
 
+import com.google.gson.Gson;
 import com.thoughtworks.xstream.XStream;
 
 public class Projeto {
@@ -50,6 +51,10 @@ public class Projeto {
 
     public String toXML() {
         return new XStream().toXML(this);
+    }
+
+    public String toJSON() {
+        return new Gson().toJson(this);
     }
 
 }
