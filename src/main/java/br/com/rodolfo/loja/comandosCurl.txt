@@ -11,3 +11,8 @@ curl -v http://localhost:8080/carrinhos/xml/1
 curl -v -H "Content-Type: Application/xml" -d "RECURSO" http://localhost:8080/carrinhos
 curl -v -X "DELETE" http://localhost:8080/carrinhos/xml/1/produtos/6237
 curl -v -X "PUT" -d "RECURSO COM OS CAMPOS PARA ATUALIZAR" http://localhost:8080/carrinhos/xml/1/produtos/6237
+
+
+*******************************************
+
+Essa é a interface uniforme. A interface uniforme no HTTP é composta por diversas características. No REST, a importância da interface uniforme é essa, são duas: para o desenvolvedor é entender onde estão essas informações, e para a aplicação é que vários tipos de aplicação conseguem entender o que a requisição e o que a resposta está dizendo.
