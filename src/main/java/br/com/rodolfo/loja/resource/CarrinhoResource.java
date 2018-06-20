@@ -7,6 +7,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -35,7 +36,7 @@ public class CarrinhoResource {
     @Path("xml/{id}")
     //Informar que o método é acessado através do método GET
     @GET
-    //Temos que informar com a anotação 'Produces' o que o método retorna, String pura ? XML ? JSON ? HTML ?
+    //Temos que informar com a anotação 'Produces' o que o método retorna, String pura ? XML ? JSON ? HTML ?. Idempotente
     @Produces(MediaType.APPLICATION_XML)
     //Para realizar a leitura de parâmetros do GET utilizamos a anotação 'QueryParam' e acessando 'http://localhost:8080/carrinhos?id=1'. Conforme o padrão REST um recurso é acessado via URI e não através de parâmetros 'http://localhost:8080/carrinhos/1'. Por isso utilizamos a anotação 'PathParam'
     //public String busca(@QueryParam("id") Long id) {
@@ -52,7 +53,7 @@ public class CarrinhoResource {
     }
 
     @POST
-    //POST não PRODUZ e sim CONSOME um RECURSO. Não retornamos nada, somente o HEAD sem conteúdo nenhum. É opcional devolver o conteúdo, no camso podemos devolver o XML junto
+    //POST não PRODUZ e sim CONSOME um RECURSO. Não retornamos nada, somente o HEAD sem conteúdo nenhum. É opcional devolver o conteúdo, no camso podemos devolver o XML junto. Não é idempotente
     //@Produces(MediaType.APPLICATION_XML)
     @Consumes(MediaType.APPLICATION_XML)
     public Response adiciona(String conteudo) {
@@ -84,7 +85,7 @@ public class CarrinhoResource {
         return carrinho.toJSON();
     }
 
-    //O verbo DELETE não recebe e nem envia a representação
+    //O verbo DELETE não recebe e nem envia a representação. Idempotente
     //No parâmetro do 'Path' temos uma URI que aponta para um subrecurso (um recurso dentro de outro)
     @Path("xml/{id}/produtos/{idProduto}")
     @DELETE
@@ -93,6 +94,24 @@ public class CarrinhoResource {
 
         Carrinho carrinho = new CarrinhoDao().busca(id);
         carrinho.remove(idProduto);
+
+        return Response.ok().build();
+    }
+
+    //O PUT recebe PARTES/CAMPOS de um recurso para realizar a atualização. Aqui é Atualizado um subrecurso. Idempotente
+    //Se é o recurso inteiro, utilize a URI que o representa (xml/{id}/produtos/{idProduto}), caso contrário, utilize uma nova URI que representa a parte a ser trocada (xml/{id}/produtos/{idProduto}/quantidade).
+    @Path("xml/{id}/produtos/{idProduto}/quantidade")
+    @PUT
+    public Response trocaProdutoQuantidade(String conteudo,
+                                 @PathParam("id") Long id,
+                                 @PathParam("idProduto") Long idProduto) {
+
+        Carrinho carrinho = new CarrinhoDao().busca(id);
+
+        Produto produto = (Produto) new XStream().fromXML(conteudo);
+
+        //Passamos para o PUT as partes que desejamos ATUALIZAR, no caso passamos no XML apenas o ID e a QUANTIDADE
+        carrinho.trocaQuantidade(produto);
 
         return Response.ok().build();
     }

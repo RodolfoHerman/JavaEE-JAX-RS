@@ -3,8 +3,11 @@ RECURSOS XML
 PRODUTO XML : <br.com.rodolfo.loja.models.Projeto><nome>Casa de Praia</nome><id>3</id><anoDeInicio>2017</anoDeInicio></br.com.rodolfo.loja.models.Projeto>
 CARRINHO XML : <br.com.rodolfo.loja.models.Carrinho>  <produtos>    <br.com.rodolfo.loja.models.Produto>      <preco>9900.0</preco>      <id>852</id>      <nome>Palio</nome>      <quantidade>1</quantidade>    </br.com.rodolfo.loja.models.Produto>  </produtos>  <rua>Rua aguas de marco, 210</rua>  <cidade>Belo Horizonte</cidade><id>2</id></br.com.rodolfo.loja.models.Carrinho>
 
+RECURSO PARA O PUT : <br.com.rodolfo.loja.models.Produto><id>3467</id><quantidade>187</quantidade></br.com.rodolfo.loja.models.Produto>
+
 COMANDOS
 
 curl -v http://localhost:8080/carrinhos/xml/1
 curl -v -H "Content-Type: Application/xml" -d "RECURSO" http://localhost:8080/carrinhos
 curl -v -X "DELETE" http://localhost:8080/carrinhos/xml/1/produtos/6237
+curl -v -X "PUT" -d "RECURSO COM OS CAMPOS PARA ATUALIZAR" http://localhost:8080/carrinhos/xml/1/produtos/6237

@@ -28,7 +28,7 @@ public class ClienteTest {
     public void startaServidor() {
 
         server = Servidor.inicializaServidor();
-        
+
         //cliente HTTP que faz as requisições para o servidor
         this.cliente = ClientBuilder.newClient();
 
@@ -83,6 +83,15 @@ public class ClienteTest {
         Assert.assertTrue(conteudo.contains("Carrinho Azul"));
 
         //Assert.assertEquals("<status>success</status>", response.readEntity(String.class));
+    }
+
+    @Test
+    public void testaQueFormatarUmaStringRetornaOEsperado() {
+
+        String forma = String.format("[Produto : %d %s %d %.2f]", 1l, "Carro Verde", 1, 1.00);
+
+        Assert.assertEquals("[Produto : 1 Carro Verde 1 1,00]", forma);
+
     }
 
 }
