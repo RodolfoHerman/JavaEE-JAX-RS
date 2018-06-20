@@ -41,7 +41,8 @@ public class CarrinhoResource {
     //Para realizar a leitura de parâmetros do GET utilizamos a anotação 'QueryParam' e acessando 'http://localhost:8080/carrinhos?id=1'. Conforme o padrão REST um recurso é acessado via URI e não através de parâmetros 'http://localhost:8080/carrinhos/1'. Por isso utilizamos a anotação 'PathParam'
     //public String busca(@QueryParam("id") Long id) {
     //public String busca(@PathParam("id") Long id, @PathParam("teste") Long teste) {
-    public String buscaXML(@PathParam("id") Long id) {
+    //public String buscaXML(@PathParam("id") Long id) {
+    public Carrinho buscaXML(@PathParam("id") Long id) {
         
         //Acessa o banco de dados e busca o carrinho
         Carrinho carrinho = new CarrinhoDao().busca(id);
@@ -49,21 +50,26 @@ public class CarrinhoResource {
         //System.out.println(teste);
 
         //pode-se utilizar qualquer biblioteca de serialização/deserialização, ex.: JSON, HTML, XML .....
-        return carrinho.toXML();
+        //return carrinho.toXML();
+
+        //Utilizando o JAXB
+        return carrinho;
     }
 
     @POST
     //POST não PRODUZ e sim CONSOME um RECURSO. Não retornamos nada, somente o HEAD sem conteúdo nenhum. É opcional devolver o conteúdo, no camso podemos devolver o XML junto. Não é idempotente
     //@Produces(MediaType.APPLICATION_XML)
     @Consumes(MediaType.APPLICATION_XML)
-    public Response adiciona(String conteudo) {
+    //public Response adiciona(String conteudo) {
+    public Response adiciona(Carrinho carrinho) {
 
         //Caso ocorra erro de "Security framework of XStream"
         //XStream xStream = new XStream();
         //Class<?>[] classes = new Class[]{CarrinhoResource.class, Carrinho.class, Produto.class, CarrinhoDao.class, Servidor.class};
         //xStream.allowTypes(classes);
         
-        Carrinho carrinho = (Carrinho) new XStream().fromXML(conteudo);
+        //usando o JAXB
+        //Carrinho carrinho = (Carrinho) new XStream().fromXML(conteudo);
         new CarrinhoDao().adiciona(carrinho);
 
         //Criando a URI para o LOCATION do HEAD
@@ -102,13 +108,15 @@ public class CarrinhoResource {
     //Se é o recurso inteiro, utilize a URI que o representa (xml/{id}/produtos/{idProduto}), caso contrário, utilize uma nova URI que representa a parte a ser trocada (xml/{id}/produtos/{idProduto}/quantidade).
     @Path("xml/{id}/produtos/{idProduto}/quantidade")
     @PUT
-    public Response trocaProdutoQuantidade(String conteudo,
+    //public Response trocaProdutoQuantidade(String conteudo,
+    public Response trocaProdutoQuantidade(Produto produto,
                                  @PathParam("id") Long id,
                                  @PathParam("idProduto") Long idProduto) {
 
         Carrinho carrinho = new CarrinhoDao().busca(id);
 
-        Produto produto = (Produto) new XStream().fromXML(conteudo);
+        //Utilizando o JAXB em PRODUTO
+        //Produto produto = (Produto) new XStream().fromXML(conteudo);
 
         //Passamos para o PUT as partes que desejamos ATUALIZAR, no caso passamos no XML apenas o ID e a QUANTIDADE
         carrinho.trocaQuantidade(produto);

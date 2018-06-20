@@ -4,15 +4,26 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import com.google.gson.Gson;
 import com.thoughtworks.xstream.XStream;
 
+//A anotação 'XmlRootElement' informa que esta classe é um elemento válido do XML do JAXB
+//A anotação 'XmlAccessorType' com o parâmetro 'XmlAccessType.FIELD' informa que todos os atributos serão serializados por padrão
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Carrinho {
     
     private List<Produto> produtos = new ArrayList<>();
     private String rua;
     private String cidade;
     private Long id;
+
+    //Neecssário para o JAXB
+    public Carrinho() {}
 
     public Carrinho adiciona(Produto produto) {
         produtos.add(produto);

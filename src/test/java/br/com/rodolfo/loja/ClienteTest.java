@@ -46,10 +46,14 @@ public class ClienteTest {
     public void testaQueBuscarUmCarrinhoTrazOCarrinhoEsperado() {
 
         //Faz a requisição ao servidor e passa como parâmetro o formato 'String' que é o que esperamos
-        String conteudo = this.target.path("/carrinhos/xml/1").request().get(String.class);
+        //Utilizando o JAXB
+        //String conteudo = this.target.path("/carrinhos/xml/1").request().get(String.class);
+
+        Carrinho carrinho = this.target.path("/carrinhos/xml/1").request().get(Carrinho.class);
 
         //Deserializar o XML para o objeto Carrinho
-        Carrinho carrinho = (Carrinho) new XStream().fromXML(conteudo);
+        //Utilizando o JAXB
+        //Carrinho carrinho = (Carrinho) new XStream().fromXML(conteudo);
 
         Assert.assertEquals("Rua aguas de marco, 210", carrinho.getRua());
     }
@@ -62,13 +66,16 @@ public class ClienteTest {
         carrinho.setCidade("Belo Horizonte");
         carrinho.setRua("Ipe do Campo");
 
-        String xml = carrinho.toXML();
+        //utilizando o JAXB
+        //String xml = carrinho.toXML();
 
         //Agora que temos o XML e sabemos que o media type que enviaremos é application/xml, 
         //precisamos representar isso de alguma maneira. Utilizamos a 
         //classe Entity do próprio JAX-RS, para criar tal representação - o conteúdo e o media type.
         //A Entity é utilizada para representar o que será enviado
-        Entity<String> entity = Entity.entity(xml, MediaType.APPLICATION_XML);
+        //Entity<String> entity = Entity.entity(xml, MediaType.APPLICATION_XML);
+
+        Entity<Carrinho> entity = Entity.entity(carrinho, MediaType.APPLICATION_XML);
 
         Response response = this.target.path("/carrinhos").request().post(entity);
 
@@ -78,9 +85,15 @@ public class ClienteTest {
         //Pegar o HEADER LOCATION 'http:localhost:8080/carrinhos/xml/{id}'
         String location = response.getHeaderString("Location");
 
-        String conteudo = cliente.target(location).request().get(String.class);
+        //Utilizando o JAXB
+        //String conteudo = cliente.target(location).request().get(String.class);
 
-        Assert.assertTrue(conteudo.contains("Carrinho Azul"));
+        Carrinho carrinhoRetornado = cliente.target(location).request().get(Carrinho.class);
+
+        //Utilizando JAXB
+        //Assert.assertTrue(conteudo.contains("Carrinho Azul"));
+
+        Assert.assertEquals("Carrinho Azul", carrinhoRetornado.getProdutos().get(0).getNome());
 
         //Assert.assertEquals("<status>success</status>", response.readEntity(String.class));
     }

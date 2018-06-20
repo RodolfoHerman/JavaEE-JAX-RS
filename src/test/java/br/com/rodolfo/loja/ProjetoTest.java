@@ -44,18 +44,24 @@ public class ProjetoTest {
     @Test
     public void testaAcessoAoRecursoProjetosNoServidor() {
 
-        String conteudo = target.path("/projetos/xml/1").request().get(String.class);
+        //String conteudo = target.path("/projetos/xml/1").request().get(String.class);
+        Projeto projeto = target.path("/projetos/xml/1").request().get(Projeto.class);
 
-        Assert.assertTrue(conteudo.contains("<nome>Loja Nova"));
+        //utilizando o JAXB
+        //Assert.assertTrue(conteudo.contains("<nome>Loja Nova"));
+        
+        Assert.assertEquals("Loja Nova", projeto.getNome());
 
     }
 
     @Test
     public void testaQueBuscarUmProjetoTrazOProjetoEsperado() {
 
-        String conteudo = target.path("/projetos/xml/1").request().get(String.class);
+        Projeto projeto = target.path("/projetos/xml/1").request().get(Projeto.class);
 
-        Projeto projeto = (Projeto) new XStream().fromXML(conteudo);
+        //Utilizando o JAXB
+        //String conteudo = target.path("/projetos/xml/1").request().get(String.class);
+        //Projeto projeto = (Projeto) new XStream().fromXML(conteudo);
 
         Assert.assertEquals("Loja Nova", projeto.getNome());
     }
@@ -65,9 +71,11 @@ public class ProjetoTest {
 
         Projeto projeto = new Projeto("Codigo JAVA", 987, 2012);
 
-        String xml = projeto.toXML();
+        //Utilizando o JAXB
+        //String xml = projeto.toXML();
+        //Entity<String> entity = Entity.entity(xml, MediaType.APPLICATION_XML);
 
-        Entity<String> entity = Entity.entity(xml, MediaType.APPLICATION_XML);
+        Entity<Projeto> entity = Entity.entity(projeto, MediaType.APPLICATION_XML);
 
         Response response = target.path("/projetos").request().post(entity);
 
@@ -75,11 +83,15 @@ public class ProjetoTest {
 
         String location = response.getHeaderString("Location");
 
-        String conteudo = this.client.target(location).request().get(String.class);
+        Projeto projeto2 = this.client.target(location).request().get(Projeto.class);
 
-        Assert.assertTrue(conteudo.contains("Codigo JAVA"));
+        //Utilizando o JAXB
+        //String conteudo = this.client.target(location).request().get(String.class);
+        //Assert.assertTrue(conteudo.contains("Codigo JAVA"));
 
         //Assert.assertEquals("<status>success</status>", response.readEntity(String.class));
+
+        Assert.assertEquals("Codigo JAVA", projeto2.getNome());
     }
 
 }

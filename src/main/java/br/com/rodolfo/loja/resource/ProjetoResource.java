@@ -23,11 +23,15 @@ public class ProjetoResource {
     @Path("xml/{id}")
     @GET
     @Produces(MediaType.APPLICATION_XML)
-    public String buscaXML(@PathParam("id") Long id) {
+    //public String buscaXML(@PathParam("id") Long id) {
+    public Projeto buscaXML(@PathParam("id") Long id) {
         
         Projeto projeto = new ProjetoDao().busca(id);
 
-        return projeto.toXML();
+        //utilizando o JAXB
+        //return projeto.toXML();
+
+        return projeto;
     }
 
     @Path("json/{id}")
@@ -43,9 +47,12 @@ public class ProjetoResource {
     @POST
     //@Produces(MediaType.APPLICATION_XML)
     @Consumes(MediaType.APPLICATION_XML)
-    public Response adiciona(String conteudo) {
+    //public Response adiciona(String conteudo) {
+    public Response adiciona(Projeto projeto) {
 
-        Projeto projeto = (Projeto) new XStream().fromXML(conteudo);
+        //Utilizando o JAXB
+        //Projeto projeto = (Projeto) new XStream().fromXML(conteudo);
+        
         new ProjetoDao().adiciona(projeto);
 
         URI location = URI.create("/projetos/xml/" + projeto.getId());
