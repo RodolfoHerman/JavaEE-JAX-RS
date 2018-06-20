@@ -23,11 +23,15 @@ public class ProjetoTest {
     
     
     private HttpServer server;
+    private Client client;
+    private WebTarget target;
 
     @Before
     public void startaServidor() {
 
-        server = Servidor.inicializaServidor();
+        this.server = Servidor.inicializaServidor();
+        this.client = ClientBuilder.newClient();
+        this.target = client.target("http://localhost:8080");
     }
 
     @After
@@ -40,10 +44,6 @@ public class ProjetoTest {
     @Test
     public void testaAcessoAoRecursoProjetosNoServidor() {
 
-        Client client = ClientBuilder.newClient();
-
-        WebTarget target = client.target("http://localhost:8080");
-
         String conteudo = target.path("/projetos/xml/1").request().get(String.class);
 
         Assert.assertTrue(conteudo.contains("<nome>Loja Nova"));
@@ -52,10 +52,6 @@ public class ProjetoTest {
 
     @Test
     public void testaQueBuscarUmProjetoTrazOProjetoEsperado() {
-
-        Client cliente = ClientBuilder.newClient();
-
-        WebTarget target = cliente.target("http://localhost:8080");
 
         String conteudo = target.path("/projetos/xml/1").request().get(String.class);
 
@@ -67,10 +63,6 @@ public class ProjetoTest {
     @Test
     public void testaQueInserirUmProjetoRetornaSuccess() {
 
-        Client client = ClientBuilder.newClient();
-
-        WebTarget target = client.target("http://localhost:8080");
-
         Projeto projeto = new Projeto("Codigo JAVA", 987, 2012);
 
         String xml = projeto.toXML();
@@ -79,7 +71,15 @@ public class ProjetoTest {
 
         Response response = target.path("/projetos").request().post(entity);
 
-        Assert.assertEquals("<status>success</status>", response.readEntity(String.class));
+        Assert.assertEquals(201, response.getStatus());
+
+        String location = response.getHeaderString("Location");
+
+        String conteudo = this.client.target(location).request().get(String.class);
+
+        Assert.assertTrue(conteudo.contains("Codigo JAVA"));
+
+        //Assert.assertEquals("<status>success</status>", response.readEntity(String.class));
     }
 
 }

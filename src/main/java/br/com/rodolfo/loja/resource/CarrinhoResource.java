@@ -1,13 +1,16 @@
 package br.com.rodolfo.loja.resource;
 
+import java.net.URI;
 import java.util.Collection;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.security.NoTypePermission;
@@ -48,8 +51,10 @@ public class CarrinhoResource {
     }
 
     @POST
-    @Produces(MediaType.APPLICATION_XML)
-    public String adiciona(String conteudo) {
+    //POST não PRODUZ e sim CONSOME um RECURSO. Não retornamos nada, somente o HEAD sem conteúdo nenhum. É opcional devolver o conteúdo, no camso podemos devolver o XML junto
+    //@Produces(MediaType.APPLICATION_XML)
+    @Consumes(MediaType.APPLICATION_XML)
+    public Response adiciona(String conteudo) {
 
         //Caso ocorra erro de "Security framework of XStream"
         //XStream xStream = new XStream();
@@ -59,7 +64,13 @@ public class CarrinhoResource {
         Carrinho carrinho = (Carrinho) new XStream().fromXML(conteudo);
         new CarrinhoDao().adiciona(carrinho);
 
-        return "<status>success</status>";
+        //Criando a URI para o LOCATION do HEAD
+        URI location = URI.create("/carrinhos/xml/" + carrinho.getId());
+
+        //Retorna no HEAD o STATUS 201 (created) e o LOCATION a uri
+        return Response.created(location).build();
+
+        //return "<status>success</status>";
     }
 
 

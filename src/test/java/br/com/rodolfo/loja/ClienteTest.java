@@ -21,11 +21,19 @@ import br.com.rodolfo.loja.models.Produto;
 public class ClienteTest {
     
     private HttpServer server;
+    private Client cliente;
+    private WebTarget target;
 
     @Before
     public void startaServidor() {
 
         server = Servidor.inicializaServidor();
+        
+        //cliente HTTP que faz as requisições para o servidor
+        this.cliente = ClientBuilder.newClient();
+
+        //Criar um alvo 'link' para realizar os trabalhos
+        this.target = this.cliente.target("http://localhost:8080");
     }
 
     @After
@@ -37,14 +45,8 @@ public class ClienteTest {
     @Test
     public void testaQueBuscarUmCarrinhoTrazOCarrinhoEsperado() {
 
-        //cliente HTTP que faz as requisições para o servidor
-        Client cliente = ClientBuilder.newClient();
-
-        //Criar um alvo 'link' para realizar os trabalhos
-        WebTarget target = cliente.target("http://localhost:8080");
-
         //Faz a requisição ao servidor e passa como parâmetro o formato 'String' que é o que esperamos
-        String conteudo = target.path("/carrinhos/1").request().get(String.class);
+        String conteudo = this.target.path("/carrinhos/xml/1").request().get(String.class);
 
         //Deserializar o XML para o objeto Carrinho
         Carrinho carrinho = (Carrinho) new XStream().fromXML(conteudo);
@@ -55,12 +57,8 @@ public class ClienteTest {
     @Test
     public void testaQueInserirUmCarrinhoRetornaSuccess() {
 
-        Client client = ClientBuilder.newClient();
-
-        WebTarget target = client.target("http://localhost:8080");
-
         Carrinho carrinho = new Carrinho();
-        carrinho.adiciona(new Produto(100l, "Carrionho Azul", 55.89, 1));
+        carrinho.adiciona(new Produto(100l, "Carrinho Azul", 55.89, 1));
         carrinho.setCidade("Belo Horizonte");
         carrinho.setRua("Ipe do Campo");
 
@@ -72,9 +70,19 @@ public class ClienteTest {
         //A Entity é utilizada para representar o que será enviado
         Entity<String> entity = Entity.entity(xml, MediaType.APPLICATION_XML);
 
-        Response response = target.path("/carrinhos").request().post(entity);
+        Response response = this.target.path("/carrinhos").request().post(entity);
 
-        Assert.assertEquals("<status>success</status>", response.readEntity(String.class));
+        //Status 201 é o código do CREATED
+        Assert.assertEquals(201, response.getStatus());
+
+        //Pegar o HEADER LOCATION 'http:localhost:8080/carrinhos/xml/{id}'
+        String location = response.getHeaderString("Location");
+
+        String conteudo = cliente.target(location).request().get(String.class);
+
+        Assert.assertTrue(conteudo.contains("Carrinho Azul"));
+
+        //Assert.assertEquals("<status>success</status>", response.readEntity(String.class));
     }
 
 }
