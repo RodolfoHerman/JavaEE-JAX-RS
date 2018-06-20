@@ -3,6 +3,7 @@ package br.com.rodolfo.loja.resource;
 import java.net.URI;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -52,6 +53,15 @@ public class ProjetoResource {
         return Response.created(location).build();
 
         //return "<status>success</status>";
+    }
+
+    @Path("xml/{id}")
+    @DELETE
+    public Response remove(@PathParam("id") Long id) {
+
+        new ProjetoDao().remove(id);
+
+        return Response.ok().build();
     }
 
 }
